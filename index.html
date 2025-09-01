@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Land Unit Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f9f9f9;
+      color: #222;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 8px 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #007bff;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .results {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    .result-item {
+      margin: 6px 0;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌾 Land Unit Converter</h1>
+    <label for="val">Value</label>
+    <input id="val" type="number" value="1" step="any">
+
+    <label for="from">From Unit</label>
+    <select id="from"></select>
+
+    <div style="margin-top:8px;">
+      <button id="swap">Swap Units</button>
+    </div>
+
+    <label for="to">To Unit</label>
+    <select id="to"></select>
+
+    <div class="results">
+      <div><strong>Converted Value:</strong> <span id="out">—</span> <span id="outUnit"></span></div>
+      <h3>All Units</h3>
+      <div id="all"></div>
+    </div>
+  </div>
+
+  <script>
+    const UNITS = [
+      { key: 'hectare', name: 'Hectare', abbr: 'ha' },
+      { key: 'bigha', name: 'Bigha', abbr: 'bigha' },
+      { key: 'bissa', name: 'Bissa', abbr: 'bissa' },
+      { key: 'biswansi', name: 'Biswansi', abbr: 'biswansi' },
+      { key: 'sqm', name: 'Square Meter', abbr: 'm²' },
+      { key: 'sqft', name: 'Square Foot', abbr: 'ft²' },
+      { key: 'gaj', name: 'Gaj (Square Yard)', abbr: 'gaj' }
+    ];
+
+    const m2 = {
+      hectare: 10000,
+      bigha: 683,
+      bissa: 683/20,
+      biswansi: 683/400,
+      sqm: 1,
+      sqft: 0.09290304,
+      gaj: 0.83612736
+    };
+
+    const fromSel = document.getElementById('from');
+    const toSel = document.getElementById('to');
+    const valInp = document.getElementById('val');
+    const out = document.getElementById('out');
+    const outUnit = document.getElementById('outUnit');
+    const all = document.getElementById('all');
+
+    function populateUnits(){
+      const opts = UNITS.map(u=><option value="${u.key}">${u.name} (${u.abbr})</option>).join('');
+      fromSel.innerHTML = opts;
+      toSel.innerHTML = opts;
+      fromSel.value = 'bigha';
+      toSel.value = 'hectare';
+    }
+
+    function toM2(value, unit){ return value * m2[unit]; }
+    function fromM2(val, unit){ return val / m2[unit]; }
+
+    function render(){
+      const value = parseFloat(valInp.value || '0');
+      const from = fromSel.value;
+      const to = toSel.value;
+      const m2val = toM2(value, from);
+      const result = fromM2(m2val, to);
+      out.textContent = result.toFixed(4);
+      outUnit.textContent = toSel.options[toSel.selectedIndex].text;
+
+      all.innerHTML = UNITS.map(u=>{
+        const v = fromM2(m2val, u.key);
+        return <div class='result-item'><strong>${u.name} (${u.abbr}):</strong> ${v.toFixed(4)}</div>;
+      }).join('');
+    }
+
+    function swap(){
+      const a = fromSel.value;
+      fromSel.value = toSel.value;
+      toSel.value = a;
+      render();
+    }
+
+    document.getElementById('swap').addEventListener('click', swap);
+    valInp.addEventListener('input', render);
+    fromSel.addEventListener('change', render);
+    toSel.addEventListener('change', render);
+
+    populateUnits();
+    render();
+  </script>
+</body>
+</html>
