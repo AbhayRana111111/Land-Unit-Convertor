@@ -115,7 +115,7 @@
     const all = document.getElementById('all');
 
     function populateUnits(){
-      const opts = UNITS.map(u=><option value="${u.key}">${u.name} (${u.abbr})</option>).join('');
+      const opts = UNITS.map(u => `<option value="${u.key}">${u.name} (${u.abbr})</option>`).join('');
       fromSel.innerHTML = opts;
       toSel.innerHTML = opts;
       fromSel.value = 'bigha';
@@ -136,7 +136,7 @@
 
       all.innerHTML = UNITS.map(u=>{
         const v = fromM2(m2val, u.key);
-        return <div class='result-item'><strong>${u.name} (${u.abbr}):</strong> ${v.toFixed(4)}</div>;
+        return `<div class='result-item'><strong>${u.name} (${u.abbr}):</strong> ${v.toFixed(4)}</div>`;
       }).join('');
     }
 
